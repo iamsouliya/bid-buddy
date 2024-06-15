@@ -1,20 +1,25 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { database } from '@/db/database'
 import { bids as bidsSchema } from '@/db/schema'
+import { revalidatePath } from 'next/cache'
 
 export default async function Home() {
   const bids = await database.query.bids.findMany()
 
   return (
-    <main>
+    <main className="container mx-auto py-12">
       <form
         action={async (formData: FormData) => {
           'use server'
           // const bid = formData.get('bid') as string
           await database.insert(bidsSchema).values({})
+
+          revalidatePath('/')
         }}
       >
-        <input type="number" name="bid" placeholder="Enter bid" />
-        <button type="submit">Place Bid</button>
+        <Input type="number" name="bid" placeholder="Enter bid" />
+        <Button type="submit">Place Bid</Button>
       </form>
       {bids.map((bid) => (
         <div key={bid.id}>{bid.id}</div>
