@@ -1,6 +1,4 @@
 import { auth } from '@/auth'
-import { SignIn } from '@/components/SignIn'
-import { SignOut } from '@/components/SignOut'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { database } from '@/db/database'
@@ -13,27 +11,17 @@ export default async function Home() {
   const session = await auth()
 
   return (
-    <main className="container mx-auto py-12">
-      {!session?.user ? <SignIn /> : <SignOut />}
-      {session?.user?.name}
-      <form
-        action={async (formData: FormData) => {
-          'use server'
-          // const bid = formData.get('bid') as string
-          await database.insert(items).values({
-            name: formData.get('name') as string,
-            userId: session?.user?.id!,
-          })
+    <main className="container mx-auto py-12 space-y-12">
+      <h1 className="text-4xl font-bold">Items For Sale</h1>
 
-          revalidatePath('/')
-        }}
-      >
-        <Input name="name" placeholder="Name your item" />
-        <Button type="submit">Post Item</Button>
-      </form>
-      {allItems.map((i) => (
-        <div key={i.id}>{i.name}</div>
-      ))}
+      <div className="grid grid-cols-4 gap-8">
+        {allItems.map((i) => (
+          <div className="border p-8 rounded-lg" key={i.id}>
+            {i.name}
+            starting price: {i.startingPrice / 100}
+          </div>
+        ))}
+      </div>
     </main>
   )
 }
