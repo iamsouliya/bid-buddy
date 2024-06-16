@@ -1,19 +1,43 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { database } from '@/db/database'
 import { items } from '@/db/schema'
 import { revalidatePath } from 'next/cache'
-import { createItemAction } from './actions'
+import { createItemAction, createUploadUrl } from './actions'
 
-export default async function CreatePage() {
-  const allItems = await database.query.items.findMany()
-
+export default function CreatePage() {
   return (
     <main className="container mx-auto py-12 space-y-12">
       <h1 className="text-4xl font-bold">Post an Item</h1>
       <form
         className=" flex flex-col border rounded-xl p-8 space-y-4 max-w-lg"
-        action={createItemAction}
+        onSubmit={async (e) => {
+          e.preventDefault()
+          const form = e.currentTarget as HTMLFormElement
+          const formData = new FormData(form)
+
+          const file = formData.get('file') as File
+
+          const uploadUrl = await createUploadUrl(file.name, file.type)
+
+          await fetch(uploadUrl, {
+            method: 'PUT',
+            body: file,
+          })
+
+          const name = formData.get('name') as string
+          const startingPrice = Math.floor(
+            parseFloat(formData.get('startingPrice') as string) * 100
+          )
+
+          await createItemAction({
+            fileName: file.name,
+            name,
+            startingPrice,
+          })
+        }}
       >
         <Input
           required
@@ -29,18 +53,11 @@ export default async function CreatePage() {
           step="0.01"
           placeholder="What to start your auction at"
         />
+        <Input type="file" name="file" placeholder="image" />
         <Button className="self-end" type="submit">
           Post Item
         </Button>
       </form>
-      <h2 className="text-2xl font-bold">Items For Sale</h2>
-      <div className="grid grid-cols-4 gap-8">
-        {allItems.map((i) => (
-          <div className="border p-8 rounded-lg" key={i.id}>
-            {i.name}
-          </div>
-        ))}
-      </div>
     </main>
   )
 }
