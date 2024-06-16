@@ -6,11 +6,12 @@ import { database } from '@/db/database'
 import { items } from '@/db/schema'
 import { revalidatePath } from 'next/cache'
 import { createItemAction, createUploadUrl } from './actions'
+import { pageTitleStyles } from '@/app/styles'
 
 export default function CreatePage() {
   return (
-    <main className="container mx-auto py-12 space-y-12">
-      <h1 className="text-4xl font-bold">Post an Item</h1>
+    <main className="space-y-12">
+      <h1 className={pageTitleStyles}>Post an Item</h1>
       <form
         className=" flex flex-col border rounded-xl p-8 space-y-4 max-w-lg"
         onSubmit={async (e) => {

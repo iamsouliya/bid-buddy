@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import { getImageUrl } from './utils/files'
 import { Item } from '@/db/schema'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { formatToDollars } from './utils/currency'
 
 export default function ItemCard({ i }: { i: Item }) {
   return (
@@ -12,7 +15,12 @@ export default function ItemCard({ i }: { i: Item }) {
         height={200}
       />
       <h2 className="text-xl font-bold">{i.name}</h2>
-      <p className="text-lg">starting price: {i.startingPrice / 100}</p>
+      <p className="text-lg">
+        starting price: {formatToDollars(i.startingPrice)}
+      </p>
+      <Button asChild>
+        <Link href={`/items/${i.id}`}>Bid on Item</Link>
+      </Button>
     </div>
   )
 }
