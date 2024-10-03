@@ -8,6 +8,8 @@ import { formatToDollars } from '@/app/utils/currency'
 import { createBidAction } from './actions'
 import { getBidsForItem } from '@/app/data-access/bids'
 import { getItem } from '@/app/data-access/items'
+import { useSession } from 'next-auth/react'
+import { auth } from '@/auth'
 
 function formatTimestamp(timestamp: Date) {
   return formatDistance(timestamp, new Date(), { addSuffix: true })
@@ -19,7 +21,7 @@ export default async function ItemPage({
   params: { itemId: string }
 }) {
   const item = await getItem(parseInt(itemId))
-
+  const session = await auth()
   if (!item) {
     return (
       <div className="space-y-8 flex items-center flex-col mt-12">
@@ -42,6 +44,7 @@ export default async function ItemPage({
 
   const hasBids = allBids.length > 0
 
+  const canPlaceBid = session && item.userId !== session.user?.id
   return (
     <main className="space-y-8">
       <div className="flex gap-8">
@@ -73,11 +76,15 @@ export default async function ItemPage({
         </div>
         <div className="space-y-4 flex-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Current Bids</h2>
-            {hasBids && (
-              <form action={createBidAction.bind(null, item.id)}>
-                <Button>Place a bid</Button>
-              </form>
+            {canPlaceBid && (
+              <>
+                <h2 className="text-2xl font-bold">Current Bids</h2>
+                {hasBids && (
+                  <form action={createBidAction.bind(null, item.id)}>
+                    <Button>Place a bid</Button>
+                  </form>
+                )}
+              </>
             )}
           </div>
 
@@ -106,9 +113,11 @@ export default async function ItemPage({
                 height={200}
               />
               <h2 className="text-2xl font-bold">No bids yet</h2>
-              <form action={createBidAction.bind(null, item.id)}>
-                <Button>Place a bid</Button>
-              </form>
+              {canPlaceBid && (
+                <form action={createBidAction.bind(null, item.id)}>
+                  <Button>Place a bid</Button>
+                </form>
+              )}
             </div>
           )}
         </div>

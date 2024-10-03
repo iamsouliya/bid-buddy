@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 
 export default function Header() {
   const session = useSession()
+  const userId = session.data?.user?.id
   const [isVisible, setIsVisible] = useState(false)
   const notifButtonRef = useRef(null)
   return (
@@ -30,18 +31,22 @@ export default function Header() {
             >
               All Auctions
             </Link>
-            <Link
-              href={'/items/create'}
-              className="hover:underline flex items-center gap-1"
-            >
-              Create Auction
-            </Link>
-            <Link
-              href={'/auctions'}
-              className="hover:underline flex items-center gap-1"
-            >
-              My Auctions
-            </Link>
+            {userId && (
+              <>
+                <Link
+                  href={'/items/create'}
+                  className="hover:underline flex items-center gap-1"
+                >
+                  Create Auction
+                </Link>
+                <Link
+                  href={'/auctions'}
+                  className="hover:underline flex items-center gap-1"
+                >
+                  My Auctions
+                </Link>
+              </>
+            )}
           </div>
         </div>
         <div className="flex gap-4 items-center">
@@ -56,9 +61,18 @@ export default function Header() {
               onClose={() => setIsVisible(false)}
             />
           </div>
+          {session.data?.user?.image && (
+            <Image
+              src={session?.data?.user?.image}
+              alt="user"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
+          )}
           <div>{session?.data?.user?.name}</div>
           <div>
-            {!session?.data?.user ? (
+            {!userId ? (
               <Button onClick={() => signIn('google')}>
                 Signin with Google
               </Button>
