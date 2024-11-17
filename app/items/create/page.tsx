@@ -2,9 +2,6 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { database } from '@/db/database'
-import { items } from '@/db/schema'
-import { revalidatePath } from 'next/cache'
 import { createItemAction, createUploadUrl } from './actions'
 import { pageTitleStyles } from '@/app/styles'
 

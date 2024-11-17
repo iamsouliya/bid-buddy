@@ -8,7 +8,6 @@ import { formatToDollars } from '@/app/utils/currency'
 import { createBidAction } from './actions'
 import { getBidsForItem } from '@/app/data-access/bids'
 import { getItem } from '@/app/data-access/items'
-import { useSession } from 'next-auth/react'
 import { auth } from '@/auth'
 
 function formatTimestamp(timestamp: Date) {
